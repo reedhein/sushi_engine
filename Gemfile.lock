@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/reedhein/rubyzoho.git
-  revision: 5c69491a181ef322390e785ab80d02c6e27df8d1
+  revision: 282a3ee1007510e7befc882a4288f1cb9a6c91db
   specs:
     rubyzoho (0.5.0)
       activemodel (>= 3.0)
@@ -26,7 +26,7 @@ GEM
     bcrypt-ruby (3.1.5)
       bcrypt (>= 3.1.3)
     builder (3.2.2)
-    byebug (8.2.5)
+    byebug (9.0.3)
     coderay (1.1.1)
     data_mapper (1.2.0)
       dm-aggregates (~> 1.2.0)
@@ -101,7 +101,7 @@ GEM
     mime-types-data (3.2016.0221)
     mimemagic (0.3.1)
     mini_portile2 (2.0.0)
-    minitest (5.8.4)
+    minitest (5.9.0)
     multi_json (1.12.0)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
@@ -126,8 +126,8 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    pry-byebug (3.3.0)
-      byebug (~> 8.0)
+    pry-byebug (3.4.0)
+      byebug (~> 9.0)
       pry (~> 0.10)
     rack (1.6.4)
     rack-protection (1.5.3)
@@ -147,7 +147,7 @@ GEM
     slop (3.6.0)
     stringex (1.5.1)
     thread_safe (0.3.5)
-    tilt (2.0.3)
+    tilt (2.0.4)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     uuidtools (2.1.5)
