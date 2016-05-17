@@ -30,13 +30,12 @@ b = c.query( "SELECT #{criteria}
               LIKE 'zcrm%'
               LIMIT 1"
            )
-puts b
 def funtimes(contact_with_attachments)
-  ZohoSushi.contact.find_by_id(contact_with_attachments)
+  RubyZoho.configuration.api.related_records("Contact", contact_with_attachments, "Attachments")
 end
+binding.pry
 derp = funtimes(contact_with_attachments)
 lol = b.first
-binding.pry
 puts user
 
 

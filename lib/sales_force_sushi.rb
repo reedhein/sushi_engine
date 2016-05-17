@@ -22,9 +22,9 @@ module SalesForceSushi
     def self.client(user = User.doug)
       Restforce.new oauth_token: user.auth_token,
         refresh_token: user.refresh_token,
-        instance_url: $cnf['sales_force']['instance_url'],
-        client_id:  $cnf['sales_force']['api_key'],
-        client_secret:  $cnf['sales_force']['api_secret']
+        instance_url: $cnf.fetch('salesforce')['instance_url'],
+        client_id:  $cnf.fetch('salesforce')['api_key'],
+        client_secret:  $cnf.fetch('salesforce')['api_secret']
     end
   end
 end

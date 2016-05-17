@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-gem 'rubyzoho', github: 'https://github.com/reedhein/rubyzoho.git'
+gem 'rubyzoho', git: 'https://github.com/reedhein/rubyzoho.git'
 gem 'pry'
 gem 'pry-byebug'
 gem 'restforce'
