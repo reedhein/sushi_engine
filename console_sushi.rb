@@ -31,9 +31,8 @@ b = c.query( "SELECT #{criteria}
               LIMIT 1"
            )
 def funtimes(contact_with_attachments)
-  RubyZoho.configuration.api.related_records("Contact", contact_with_attachments, "Attachments")
+  RubyZoho.configuration.api.related_records("Contacts", contact_with_attachments, "Attachments")
 end
-binding.pry
 derp = funtimes(contact_with_attachments)
 lol = b.first
 puts user
