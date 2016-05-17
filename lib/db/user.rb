@@ -1,6 +1,3 @@
-require 'data_mapper'
-DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/dev.db")
-
 class User
   include DataMapper::Resource
   property :id, Serial
@@ -14,8 +11,3 @@ class User
       refresh_token: $cnf['user']['refresh_token']
   end
 end
-
-
-User.auto_migrate!
-
-DataMapper.finalize
