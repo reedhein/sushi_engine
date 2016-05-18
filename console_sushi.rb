@@ -18,33 +18,43 @@ $cnf = YAML::load(File.open('secrets.yml'))
 # test = RubyZoho.configuration.api.download_file('Contacts', derp.first[:id])
 
 class MigrationTool
-  def initialize( offset = 0 )
+  attr_accessor :work_queue
+  def initialize( limit = 200, offset = 0 )
+    @limit      = limit
     @offset     = offset
     @fields     = get_opportunity_fields
     @sf_sushi   = SalesForceSushi::Client.new
-    @work_queue ||= get_salesforce_work_queue
+    @work_queue = get_sales_force_work_queue
   end
 
   def process_work_queue
-    @work_queue.each do |sf|
-      yield sf if block_given?
-      if sf.migration_complete? == true
-        puts "this sushi pair is already processed. Moving on to next"
-        next
+    while !@work_queue.empty? do 
+      @work_queue.each do |sf|
+        if sf.migration_complete? == true
+          puts "this sushi pair is already processed. Moving on to next"
+          next
+        end
+        zoho = sf.find_zoho
+        AttachmentMigrationTool.new(zoho, sf).transfer
       end
-      zoho = sf.find_zoho
-      AttachmentMigrationTool.new(zoho, sf).transfer
+      @offset += 200
+      @work_queue = get_sales_force_work_queue
     end
   end
 
-  def get_salesforce_work_queue
-    @sf_sushi.query( "SELECT #{@fields}
-                      FROM Opportunity
-                      WHERE Zoho_ID__c
-                      LIKE 'zcrm%'
-                      LIMIT 200
-                      OFFSET #{@offset} 
-                    ")
+  def get_sales_force_work_queue
+    result = nil
+    while get_unfinished_objects.empty? do
+      @offset += 200
+      result = get_unfinished_objects
+    end
+    result
+  end
+
+  def get_unfinished_objects
+    @sf_sushi.custom_query(
+      "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' LIMIT #{@limit} OFFSET #{@offset} "
+    )
   end
 
   def get_opportunity_fields
@@ -59,5 +69,5 @@ class MigrationTool
 
 end
 
-MigrationTool.new(200).process_work_queue
+MigrationTool.new().process_work_queue
 

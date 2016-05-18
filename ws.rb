@@ -3,7 +3,7 @@ require 'sinatra'
 require 'haml'
 require 'omniauth-salesforce'
 require 'pry'
-require_relative 'lib/user'
+require_relative 'lib/db/db'
 require_relative 'lib/zoho_sushi'
 require_relative 'lib/sales_force_sushi'
 
@@ -40,21 +40,10 @@ class SalesForceApp < Sinatra::Base
   end
 
   get '/auth/:provider/callback' do
-    user = User.get(user_id: env['omniauth.auth']['extra']['user_id'])
-    if user.nil?
-      user = User.new(
-        user_id: env['omniauth.auth']['extra']['user_id'],
-        auth_token: env['omniauth.auth']['credentials']['token'],
-        refresh_token: env['omniauth.auth']['credentials']['refresh_token']
-      )
-      if user.valid?
-        user.save
-        binding.pry
-      else
-        binding.pry
-      end
-    end
-
+    user = User.first_or_create(user_id: env['omniauth.auth']['extra']['user_id'])
+    user.update( auth_token: env['omniauth.auth']['credentials']['token'],
+                  refresh_token: env['omniauth.auth']['credentials']['refresh_token']
+                )
     session[:auth_hash] = env['omniauth.auth']
     redirect '/' unless session[:auth_hash] == nil
   end

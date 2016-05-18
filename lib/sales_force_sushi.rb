@@ -5,7 +5,7 @@ module SalesForceSushi
 
   class Client < Restforce::Client
 
-    def initialize(user = User.doug)
+    def initialize(user = User.first)
       @client = self.class.client(user)
     end
 
@@ -13,14 +13,16 @@ module SalesForceSushi
       @zoho ||= ZohoSushi.client
     end
 
-    def query(string = nil)
+    def custom_query(string = nil)
       result = @client.query(string ||  "select Id, Zoho_ID__c, Account.Name, CloseDate from Opportunity limit 1")
-      result.entries.map do |entity|
+      result.entries.delete_if do |entity|
+        SalesForceProgressRecord.first(sales_force_id: entity.fetch('Id'), complete: true)
+      end.map do |entity|
         SalesForceSushi::Opportunity.new(entity)
       end
     end
 
-    def self.client(user = User.doug)
+    def self.client(user = User.first)
       Restforce.new oauth_token: user.auth_token,
         refresh_token: user.refresh_token,
         instance_url: $cnf.fetch('salesforce')['instance_url'],

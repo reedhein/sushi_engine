@@ -5,10 +5,10 @@ module SalesForceSushi
     attr_accessor :id, :zoho_id__c, :account, :amount, :close_date, :contract, :description, :expected_revenue, :forcase_category_name,
       :last_modified_by, :lead_source, :next_step, :name, :owner, :record_type, :partner_account, :pricebook_2,
       :campain, :is_private, :probability, :total_opportunity_quality, :stage_name, :synced_quote, :type, :url,
-      :api_object, :migration_complete
+      :api_object, :migration_complete, :attachment_names
     def initialize(api_object)
-      @api_object     = api_object
-      @storage_object = conver_api_object_to_local_storage(api_object)
+      @api_object       = api_object
+      @storage_object   = conver_api_object_to_local_storage(api_object)
       @migration_complete = @storage_object.complete
       map_attributes(api_object)
       self
@@ -71,15 +71,15 @@ module SalesForceSushi
       ZohoSushi.counterpart(zoho_id__c)
     end
 
+    def attachments
+      @attachments ||= SalesForceSushi::Client.client.query("SELECT Id, Name FROM Attachment WHERE ParentId = '#{id}'")
+    end
+
     private
 
     def file_already_present?(file_data)
-      search_results = SalesForceSushi::Client.new.query(" SELECT Id
-                                                      FROM Attachment
-                                                      WHERE Name = #{file_data[:file_name].to_json}
-                                                      AND ParentId = '#{id}'
-                                                    ")
-      !search_results.empty?
+      puts 'testing for presence'
+      attachments.entries.map{|attachment| attachment.fetch('Name')}.include? file_data[:file_name]
     end
 
     def description_from_file_data(file_data)
@@ -89,6 +89,5 @@ module SalesForceSushi
        "Last modified: #{file_data[:modified_time]}"
       ]
     end
-
   end
 end
