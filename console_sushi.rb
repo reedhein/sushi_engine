@@ -42,7 +42,7 @@ class MigrationTool
         puts "adding more to queue"
         @work_queue = get_sales_force_work_queue
       end
-    rescue Net::OpenTimeout
+    rescue Net::OpenTimeout, SocketError
       puts "network timeout sleeping for 30 seconds"
       sleep 30
       retry
