@@ -4,12 +4,13 @@ module SalesForceSushi
   attr_reader :user, :zoho, :zoho_id, :sales_force_id
 
   class Client < Restforce::Client
-    def zoho
-      @zoho ||= ZohoSushi.client
-    end
 
     def initialize(user = User.doug)
       @client = self.class.client(user)
+    end
+
+    def zoho
+      @zoho ||= ZohoSushi.client
     end
 
     def query(string = nil)
