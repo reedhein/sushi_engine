@@ -28,23 +28,30 @@ class MigrationTool
   end
 
   def process_work_queue
-    while !@work_queue.empty? do 
-      @work_queue.each do |sf|
-        if sf.migration_complete? == true
-          puts "this sushi pair is already processed. Moving on to next"
-          next
+    begin
+      while !@work_queue.empty? do 
+        @work_queue.each do |sf|
+          if sf.migration_complete? == true
+            puts "this sushi pair is already processed. Moving on to next"
+            next
+          end
+          zoho = sf.find_zoho
+          AttachmentMigrationTool.new(zoho, sf).transfer
         end
-        zoho = sf.find_zoho
-        AttachmentMigrationTool.new(zoho, sf).transfer
+        @offset += 200
+        puts "adding more to queue"
+        @work_queue = get_sales_force_work_queue
       end
-      @offset += 200
-      @work_queue = get_sales_force_work_queue
+    rescue Net::OpenTimeout
+      puts "network timeout sleeping for 30 seconds"
+      sleep 30
+      retry
     end
   end
 
   def get_sales_force_work_queue
-    result = nil
-    while get_unfinished_objects.empty? do
+    result = get_unfinished_objects
+    while result.empty? do
       @offset += 200
       result = get_unfinished_objects
     end
