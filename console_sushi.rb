@@ -19,9 +19,9 @@ $cnf = YAML::load(File.open('secrets.yml'))
 
 class MigrationTool
   attr_accessor :work_queue, :meta
-  def initialize( limit = 200, offset = 0 )
-    @limit      = limit
-    @offset     = offset
+  def initialize( limit = 2000, offset = 0 )
+    @limit          = limit
+    @offset_date = nil
     @fields     = get_opportunity_fields
     @sf_sushi   = SalesForceSushi::Client.new
     @meta       = manage_meta
@@ -39,13 +39,13 @@ class MigrationTool
           zoho = sf.find_zoho
           tool_class.new(zoho, sf, @meta).perform
         end
-        @offset += 200
+        @offset_date = @work_queue.last.created_date
         puts "adding more to queue"
         @work_queue = get_sales_force_work_queue
       end
-    rescue Net::OpenTimeout, SocketError
-      puts "network timeout sleeping for 30 seconds"
-      sleep 30
+    rescue Net::OpenTimeout, SocketError, Errno::ETIMEDOUT
+      puts "network timeout sleeping for 10 seconds"
+      sleep 10
       retry
     end
     @meta.udpate(:end_time, DateTime.now)
@@ -54,16 +54,19 @@ class MigrationTool
   def get_sales_force_work_queue
     result = get_unfinished_objects
     while result.empty? do
-      @offset += 200
+      @offset_date = SalesForceProgressRecord.last.created_date.to_s
       result = get_unfinished_objects
     end
     result
   end
 
   def get_unfinished_objects
-    @sf_sushi.custom_query(
-      "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' LIMIT #{@limit} OFFSET #{@offset} "
-    )
+    if @offset_date
+      query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' AND CreatedDate > #{@offset_date} ORDER BY CreatedDate LIMIT #{@limit}"
+    else
+      query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' ORDER BY CreatedDate LIMIT #{@limit}"
+    end
+    @sf_sushi.custom_query(query)
   end
 
   def get_opportunity_fields

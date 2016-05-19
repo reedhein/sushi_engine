@@ -11,7 +11,8 @@ module SalesForceSushi
     def conver_api_object_to_local_storage(api_object)
       SalesForceProgressRecord.first_or_create(
         sales_force_id: api_object.fetch('Id'),
-        object_type: api_object.fetch('attributes').fetch('type')
+        object_type: api_object.fetch('attributes').fetch('type'),
+        created_date: DateTime.parse(api_object.fetch('CreatedDate'))
       )
     end
 
@@ -46,8 +47,8 @@ module SalesForceSushi
         return
       end
       description = description_from_file_data(file_data)
-      file = ZohoSushi::Utils.client.download_file(zoho_sushi.module_name, file_data[:id])
       begin
+        file = ZohoSushi::Utils.client.download_file(zoho_sushi.module_name, file_data[:id])
         binding.pry
         SalesForceSushi::Client.new.create('Attachment',
                                               Body: file,
@@ -55,6 +56,10 @@ module SalesForceSushi
                                               Name: file_data[:file_name],
                                               ParentId: id)
         @modified = true
+      rescue Errno::ETIMEDOUT
+        puts 'api timeout waiting 10 seconds and retrying'
+        sleep 10
+        retry
       rescue => e
         puts e
         binding.pry
