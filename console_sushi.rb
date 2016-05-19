@@ -9,13 +9,6 @@ require_relative 'lib/sales_force_sushi'
 require_relative 'lib/attachment_migration_tool'
 
 $cnf = YAML::load(File.open('secrets.yml'))
-# contact_with_attachments = "1041863000006597931"
-# binding.pry
-# def funtimes(contact_with_attachments)
-#   RubyZoho.configuration.api.related_records("Contacts", contact_with_attachments, "Attachments")
-# end
-# derp = funtimes(contact_with_attachments)
-# test = RubyZoho.configuration.api.download_file('Contacts', derp.first[:id])
 
 class MigrationTool
   attr_accessor :work_queue, :meta
