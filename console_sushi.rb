@@ -27,7 +27,7 @@ class MigrationTool
     @work_queue = get_sales_force_work_queue
   end
 
-  def process_work_queue
+  def process_work_queue(tool_class = AttachmentMigrationTool)
     begin
       while !@work_queue.empty? do 
         @work_queue.each do |sf|
@@ -36,7 +36,7 @@ class MigrationTool
             next
           end
           zoho = sf.find_zoho
-          AttachmentMigrationTool.new(zoho, sf).transfer
+          tool_class.new(zoho, sf).perform
         end
         @offset += 200
         puts "adding more to queue"

@@ -4,7 +4,7 @@ class AttachmentMigrationTool
     @sales_force_sushi = sales_force_sushi
   end
 
-  def transfer
+  def perform
     attachments = @zoho_sushi.attachments
     attachments.map do |attachment|
       @sales_force_sushi.attach(@zoho_sushi, attachment)
