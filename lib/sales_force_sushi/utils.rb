@@ -24,6 +24,10 @@ module SalesForceSushi
       @migration_complete = true
     end
 
+    def modified?
+      @modified
+    end
+
     def map_attributes(params)
       params.each do |key, value|
         next if key == "attributes"
@@ -50,6 +54,7 @@ module SalesForceSushi
                                               Description: description,
                                               Name: file_data[:file_name],
                                               ParentId: id)
+        @modified = true
       rescue => e
         puts e
         binding.pry
@@ -61,7 +66,9 @@ module SalesForceSushi
     end
 
     def find_zoho
-      ZohoSushi::Base.counterpart(zoho_id__c)
+      zoho = ZohoSushi::Base.counterpart(zoho_id__c)
+      @storage_object.update(zoho_object_type: zoho.module_name)
+      zoho
     end
 
     def attachments

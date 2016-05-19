@@ -1,5 +1,7 @@
 class AttachmentMigrationTool
-  def initialize(zoho_sushi, sales_force_sushi)
+  attr_accessor :meta
+  def initialize(zoho_sushi, sales_force_sushi, meta)
+    @meta              = meta
     @zoho_sushi        = zoho_sushi
     @sales_force_sushi = sales_force_sushi
   end
@@ -9,10 +11,8 @@ class AttachmentMigrationTool
     attachments.map do |attachment|
       @sales_force_sushi.attach(@zoho_sushi, attachment)
     end
+    @meta.update(:updated_count, @meta.updated_count += 1) if @sales_force_sushi.modified?
     @zoho_sushi.mark_completed
     @sales_force_sushi.mark_completed
-  end
-
-  def save_local
   end
 end

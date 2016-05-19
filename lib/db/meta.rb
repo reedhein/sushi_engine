@@ -3,5 +3,6 @@ class Meta
   property :id, Serial
   property :start_time, DateTime
   property :end_time, DateTime
-  property :current_offset, Integer
+  property :updated_count, Integer, default: 0
+  property :restart_count, Integer, default: 0
 end

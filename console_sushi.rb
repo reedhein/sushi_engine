@@ -18,12 +18,13 @@ $cnf = YAML::load(File.open('secrets.yml'))
 # test = RubyZoho.configuration.api.download_file('Contacts', derp.first[:id])
 
 class MigrationTool
-  attr_accessor :work_queue
+  attr_accessor :work_queue, :meta
   def initialize( limit = 200, offset = 0 )
     @limit      = limit
     @offset     = offset
     @fields     = get_opportunity_fields
     @sf_sushi   = SalesForceSushi::Client.new
+    @meta       = manage_meta
     @work_queue = get_sales_force_work_queue
   end
 
@@ -36,7 +37,7 @@ class MigrationTool
             next
           end
           zoho = sf.find_zoho
-          tool_class.new(zoho, sf).perform
+          tool_class.new(zoho, sf, @meta).perform
         end
         @offset += 200
         puts "adding more to queue"
@@ -47,6 +48,7 @@ class MigrationTool
       sleep 30
       retry
     end
+    @meta.udpate(:end_time, DateTime.now)
   end
 
   def get_sales_force_work_queue
@@ -72,6 +74,15 @@ class MigrationTool
         x.camelize
       end
     end.join(', ')
+  end
+
+  def manage_meta
+    meta = Meta.first_or_create
+    if meta.persistence_state?
+      meta.restart_count += 1
+    else
+      meta.update(start_time: DateTime.now)
+    end
   end
 
 end
