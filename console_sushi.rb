@@ -61,7 +61,7 @@ class MigrationTool
   end
 
   def get_unfinished_objects
-    if @offset_date
+    if @offset_date && !@offset_date.empty?
       query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' AND CreatedDate > #{@offset_date} ORDER BY CreatedDate LIMIT #{@limit}"
     else
       query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' ORDER BY CreatedDate LIMIT #{@limit}"
