@@ -22,8 +22,8 @@ class MigrationTool
 
   def process_work_queue(tool_class = AttachmentMigrationTool)
     begin
-      while !get_sales_force_work_queue.empty? do 
-        get_sales_force_work_queue.each do |sf|
+      while !get_sales_force_work_queue.empty? do
+        get_sales_force_work_queue do |sf|
           if sf.migration_complete?
             puts "this sushi pair is already processed. Moving on to next"
             next 
@@ -32,7 +32,9 @@ class MigrationTool
           tool_class.new(zoho, sf, @meta).perform
         end
         @offset_date = SalesForceProgressRecord.last.try(:completed_at).try(:to_s)
-        puts "adding more to queue"
+        puts "#"*88
+        puts "batch done, adding more to queue"
+        puts "#"*88
       end
     rescue Net::OpenTimeout, SocketError, Errno::ETIMEDOUT
       puts "network timeout sleeping for 10 seconds"
