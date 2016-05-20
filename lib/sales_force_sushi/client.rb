@@ -10,11 +10,9 @@ module SalesForceSushi
       @zoho ||= ZohoSushi.client
     end
 
-    def custom_query(string = nil)
-      result = @client.query(string ||  "select Id, Zoho_ID__c, Account.Name, CloseDate from Opportunity limit 1")
-      result.entries.delete_if do |entity|
-        SalesForceProgressRecord.first(sales_force_id: entity.fetch('Id'), complete: true)
-      end.map do |entity|
+    def custom_query(string)
+      result = @client.query(string)
+      result.entries.map do |entity|
         yield SalesForceSushi::Opportunity.new(entity) if block_given?
         SalesForceSushi::Opportunity.new(entity)
       end

@@ -18,23 +18,21 @@ class MigrationTool
     @fields     = get_opportunity_fields
     @sf_sushi   = SalesForceSushi::Client.new
     @meta       = manage_meta
-    @work_queue = get_sales_force_work_queue
   end
 
   def process_work_queue(tool_class = AttachmentMigrationTool)
     begin
-      while !@work_queue.empty? do 
-        @work_queue.each do |sf|
-          if sf.migration_complete? == true
+      while !get_sales_force_work_queue.empty? do 
+        get_sales_force_work_queue.each do |sf|
+          if sf.migration_complete?
             puts "this sushi pair is already processed. Moving on to next"
-            next
+            next 
           end
           zoho = sf.find_zoho
           tool_class.new(zoho, sf, @meta).perform
         end
         @offset_date = @work_queue.last.created_date.to_s
         puts "adding more to queue"
-        @work_queue = get_sales_force_work_queue
       end
     rescue Net::OpenTimeout, SocketError, Errno::ETIMEDOUT
       puts "network timeout sleeping for 10 seconds"
@@ -44,22 +42,26 @@ class MigrationTool
     @meta.udpate(:end_time, DateTime.now)
   end
 
-  def get_sales_force_work_queue
-    result = get_unfinished_objects
-    while result.empty? do
-      @offset_date = SalesForceProgressRecord.last.created_date.to_s
-      result = get_unfinished_objects
+  def get_sales_force_work_queue(&block)
+    if sfpr =  SalesForceProgressRecord.last
+      @offset_date = sfpr.created_date.to_s
+      get_unfinished_objects
+    else
+      get_unfinished_objects.each do |r|
+        yield r if block_given?
+      end
     end
-    result
   end
 
-  def get_unfinished_objects
+  def get_unfinished_object(&block)
     if @offset_date && !@offset_date.empty?
       query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' AND CreatedDate >= #{@offset_date} ORDER BY CreatedDate LIMIT #{@limit}"
     else
       query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' ORDER BY CreatedDate LIMIT #{@limit}"
     end
-    @sf_sushi.custom_query(query)
+    @sf_sushi.custom_query(query).each do |sushi|
+      yield sushi if block_given?
+    end
   end
 
   def get_opportunity_fields
