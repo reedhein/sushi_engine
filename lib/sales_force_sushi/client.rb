@@ -15,6 +15,7 @@ module SalesForceSushi
       result.entries.delete_if do |entity|
         SalesForceProgressRecord.first(sales_force_id: entity.fetch('Id'), complete: true)
       end.map do |entity|
+        yield SalesForceSushi::Opportunity.new(entity) if block_given?
         SalesForceSushi::Opportunity.new(entity)
       end
     end
