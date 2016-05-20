@@ -26,12 +26,11 @@ class MigrationTool
         get_sales_force_work_queue do |sf|
           if sf.migration_complete?
             puts "this sushi pair is already processed. Moving on to next"
-            next 
+            next
           end
           zoho = sf.find_zoho
           tool_class.new(zoho, sf, @meta).perform
         end
-        @offset_date = SalesForceProgressRecord.first(complete: false).try(:completed_date).try(:to_s)
         puts "#"*88
         puts "batch done, adding more to queue"
         puts "#"*88
@@ -45,13 +44,9 @@ class MigrationTool
   end
 
   def get_sales_force_work_queue(&block)
-    if sfpr =  SalesForceProgressRecord.last
-      @offset_date = sfpr.created_date.to_s
-      get_unfinished_objects
-    else
-      get_unfinished_objects do |r|
-        yield r if block_given?
-      end
+    @offset_date = SalesForceProgressRecord.first(complete: false).try(:completed_date).try(:to_s)
+    get_unfinished_objects do |r|
+      yield r if block_given?
     end
   end
 
