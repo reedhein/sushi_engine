@@ -32,7 +32,7 @@ class MigrationTool
           zoho = sf.find_zoho
           tool_class.new(zoho, sf, @meta).perform
         end
-        @offset_date = @work_queue.last.created_date
+        @offset_date = @work_queue.last.created_date.to_s
         puts "adding more to queue"
         @work_queue = get_sales_force_work_queue
       end
