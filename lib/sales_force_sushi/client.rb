@@ -24,7 +24,8 @@ module SalesForceSushi
         refresh_token: user.refresh_token,
         instance_url: $cnf.fetch('salesforce')['instance_url'],
         client_id:  $cnf.fetch('salesforce')['api_key'],
-        client_secret:  $cnf.fetch('salesforce')['api_secret']
+        client_secret:  $cnf.fetch('salesforce')['api_secret'],
+        api_version: "32.0"
     end
   end
 end
