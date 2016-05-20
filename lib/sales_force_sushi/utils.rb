@@ -3,7 +3,6 @@ module SalesForceSushi
     def initialize(api_object)
       @api_object         = api_object
       @storage_object     = conver_api_object_to_local_storage(api_object)
-      @migration_complete = @storage_object.complete
       map_attributes(api_object)
       self
     end
@@ -17,7 +16,7 @@ module SalesForceSushi
     end
 
     def migration_complete?
-      migration_complete
+      @migration_complete ||= @storage_object.complete
     end
 
     def mark_completed
