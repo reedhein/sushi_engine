@@ -10,7 +10,7 @@ module SalesForceSushi
       @zoho ||= ZohoSushi.client
     end
 
-    def custom_query(string)
+    def custom_query(string, &block)
       result = @client.query(string)
       result.entries.map do |entity|
         yield SalesForceSushi::Opportunity.new(entity) if block_given?
