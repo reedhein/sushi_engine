@@ -31,7 +31,7 @@ class MigrationTool
           zoho = sf.find_zoho
           tool_class.new(zoho, sf, @meta).perform
         end
-        @offset_date = SalesForceProgressRecord.last.try(:completed_at).try(:to_s)
+        @offset_date = SalesForceProgressRecord.first(complete: false).try(:completed_date).try(:to_s)
         puts "#"*88
         puts "batch done, adding more to queue"
         puts "#"*88
