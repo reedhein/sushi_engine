@@ -49,7 +49,7 @@ class MigrationTool
       @offset_date = sfpr.created_date.to_s
       get_unfinished_objects
     else
-      get_unfinished_objects.each do |r|
+      get_unfinished_objects do |r|
         yield r if block_given?
       end
     end
@@ -61,7 +61,7 @@ class MigrationTool
     else
       query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' ORDER BY CreatedDate LIMIT #{@limit}"
     end
-    @sf_sushi.custom_query(query).each do |sushi|
+    @sf_sushi.custom_query(query) do |sushi|
       yield sushi if block_given?
     end
   end
