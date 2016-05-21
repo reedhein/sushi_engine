@@ -11,33 +11,38 @@ require_relative 'lib/attachment_migration_tool'
 $cnf = YAML::load(File.open('secrets.yml'))
 
 class MigrationTool
-  attr_accessor :work_queue, :meta
+  attr_accessor :batch_processed, :meta
   def initialize( limit = 2000, offset = 0 )
-    @limit          = limit
-    @offset_date = nil
-    @fields     = get_opportunity_fields
-    @sf_sushi   = SalesForceSushi::Client.new
-    @meta       = manage_meta
+    @limit           = limit
+    @offset_date     = nil
+    @fields          = get_opportunity_fields
+    @sf_sushi        = SalesForceSushi::Client.new
+    @batch_processed = 1
+    @do_work         = true
+    @meta            = manage_meta
   end
 
   def process_work_queue(tool_class = AttachmentMigrationTool)
     begin
-      while !get_sales_force_work_queue.empty? do
+      while @processed > 0 do
+        @processed = 0
         get_sales_force_work_queue do |sf|
           if sf.migration_complete?
             puts "this sushi pair is already processed. Moving on to next"
             next
+          else
+            zoho = sf.find_zoho
+            tool_class.new(zoho, sf, @meta).perform
           end
-          zoho = sf.find_zoho
-          tool_class.new(zoho, sf, @meta).perform
+          @processed += 1
         end
         puts "#"*88
         puts "batch done, adding more to queue"
         puts "#"*88
       end
     rescue Net::OpenTimeout, SocketError, Errno::ETIMEDOUT
-      puts "network timeout sleeping for 10 seconds"
-      sleep 10
+      puts "network timeout sleeping for 50 seconds"
+      sleep 5
       retry
     end
     @meta.udpate(:end_time, DateTime.now)
