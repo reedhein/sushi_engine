@@ -69,6 +69,7 @@ class MigrationTool
     else
       query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' ORDER BY CreatedDate LIMIT #{@limit}"
     end
+    binding.pry
     @sf_sushi.custom_query(query) do |sushi|
       yield sushi if block_given?
     end
