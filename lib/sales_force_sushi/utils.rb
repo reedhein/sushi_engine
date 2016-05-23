@@ -48,8 +48,9 @@ module SalesForceSushi
       # description = description_from_file_data(file_data)
       begin
         file = ZohoSushi::Base.client.download_file(zoho_sushi.module_name, file_data[:id])
+        binding.pry
         SalesForceSushi::Client.client.create('Attachment',
-                                              Body: file,
+                                              Body: Base64::encode64(file),
                                               Description: "imported from zoho ID: #{zoho_sushi.id}",
                                               Name: file_data[:file_name],
                                               ParentId: id)
