@@ -33,12 +33,12 @@ class MigrationTool
         get_sales_force_work_queue do |sf|
           if sf.migration_complete?
             puts "this sushi pair is already processed. Moving on to next"
+            @processed += 1
             next
           else
             zoho = sf.find_zoho
             tool_class.new(zoho, sf, @meta).perform
           end
-          binding.pry
           @processed += 1
           puts "$"*88
           puts @processed
