@@ -19,12 +19,13 @@ module SalesForceSushi
     end
 
     def self.client(user = User.first)
+      Restforce.log = true
       Restforce.new oauth_token: user.auth_token,
         refresh_token: user.refresh_token,
         instance_url: $cnf.fetch('salesforce')['instance_url'],
         client_id:  $cnf.fetch('salesforce')['api_key'],
         client_secret:  $cnf.fetch('salesforce')['api_secret'],
-        api_version: "32.0"
+        api_version:  $cnf.fetch('salesforce')['api_version']
     end
   end
 end

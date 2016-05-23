@@ -45,13 +45,12 @@ module SalesForceSushi
         puts "*" * 88
         return
       end
-      description = description_from_file_data(file_data)
+      # description = description_from_file_data(file_data)
       begin
         file = ZohoSushi::Base.client.download_file(zoho_sushi.module_name, file_data[:id])
-        binding.pry
-        SalesForceSushi::Client.new.create('Attachment',
+        SalesForceSushi::Client.client.create('Attachment',
                                               Body: file,
-                                              Description: description,
+                                              Description: "imported from zoho ID: #{zoho_sushi.id}",
                                               Name: file_data[:file_name],
                                               ParentId: id)
         @modified = true
