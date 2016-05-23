@@ -11,13 +11,13 @@ require_relative 'lib/attachment_migration_tool'
 $cnf = YAML::load(File.open('secrets.yml'))
 
 class MigrationTool
-  attr_accessor :batch_processed, :meta
+  attr_accessor :processed, :meta
   def initialize( limit = 2000, offset = 0 )
     @limit           = limit
     @offset_date     = nil
     @fields          = get_opportunity_fields
     @sf_sushi        = SalesForceSushi::Client.new
-    @batch_processed = 1
+    @processed = 1
     @do_work         = true
     @meta            = manage_meta
   end
