@@ -39,6 +39,8 @@ class MigrationTool
             tool_class.new(zoho, sf, @meta).perform
           end
           @processed += 1
+          puts "$"*88
+          puts @processed
         end
         puts "#"*88
         puts "batch done, adding more to queue"
@@ -87,6 +89,7 @@ class MigrationTool
     else
       meta.update(start_time: DateTime.now)
     end
+    meta
   end
 
 end
