@@ -57,7 +57,7 @@ class MigrationTool
   end
 
   def get_sales_force_work_queue(&block)
-    @offset_date = SalesForceProgressRecord.first(complete: false).try(:completed_date).try(:to_s)
+    @offset_date = SalesForceProgressRecord.first(complete: false).try(:created_date).try(:to_s)
     get_unfinished_objects do |r|
       yield r if block_given?
     end
@@ -69,7 +69,6 @@ class MigrationTool
     else
       query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' ORDER BY CreatedDate LIMIT #{@limit}"
     end
-    binding.pry
     @sf_sushi.custom_query(query) do |sushi|
       yield sushi if block_given?
     end
