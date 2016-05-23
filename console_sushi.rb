@@ -38,6 +38,7 @@ class MigrationTool
             zoho = sf.find_zoho
             tool_class.new(zoho, sf, @meta).perform
           end
+          binding.pry
           @processed += 1
           puts "$"*88
           puts @processed
@@ -51,7 +52,8 @@ class MigrationTool
       sleep 5
       retry
     end
-    @meta.update(:end_time, DateTime.now)
+    @meta.update(:end_time, DateTime.now.to_s)
+    puts @processed
   end
 
   def get_sales_force_work_queue(&block)
