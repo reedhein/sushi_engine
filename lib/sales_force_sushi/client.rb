@@ -25,7 +25,7 @@ module SalesForceSushi
         instance_url: $cnf.fetch('salesforce')['instance_url'],
         client_id:  $cnf.fetch('salesforce')['api_key'],
         client_secret:  $cnf.fetch('salesforce')['api_secret'],
-        api_version:  $cnf.fetch('salesforce')['api_version'] || '33'
+        api_version:  $cnf.fetch('salesforce')['api_version'] || '33.0'
     end
   end
 end
