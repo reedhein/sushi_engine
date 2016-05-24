@@ -39,7 +39,7 @@ module ZohoSushi
 
       def counterpart(id)
         corresponding_class = nil
-        %w[potential contact lead task user quote account].detect do |zoho_object|
+        %w[potential contact lead user quote account].detect do |zoho_object|
           puts "checking against zoho object #{zoho_object}"
           sleep 1
           begin
