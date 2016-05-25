@@ -50,6 +50,7 @@ module ZohoSushi
             retry
           end
         end
+        return nil if corresponding_class.nil? 
         module_name = corresponding_class.first.module_name.singularize
         ["ZohoSushi" , module_name].join('::').constantize.new(corresponding_class.first)
       end

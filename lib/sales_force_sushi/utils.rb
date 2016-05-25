@@ -69,7 +69,7 @@ module SalesForceSushi
     end
 
     def find_zoho
-      zoho = ZohoSushi::Base.counterpart(zoho_id__c)
+      zoho = ZohoSushi::Base.counterpart(zoho_id__c) || SalesForceSushi::Determine.find_zoho(self)
       @storage_object.update(zoho_object_type: zoho.module_name)
       zoho
     end

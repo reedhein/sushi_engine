@@ -64,11 +64,11 @@ class MigrationTool
   end
 
   def get_unfinished_objects(&block)
-    if @offset_date && !@offset_date.empty?
-      query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' AND CreatedDate >= #{@offset_date} ORDER BY CreatedDate LIMIT #{@limit}"
-    else
-      query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' ORDER BY CreatedDate LIMIT #{@limit}"
-    end
+    # if @offset_date && !@offset_date.empty?
+    #   query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' AND CreatedDate >= #{@offset_date} ORDER BY CreatedDate LIMIT #{@limit}"
+    # else
+      query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' AND zoho_id__c = 'zcrm_1041863000009596031' ORDER BY CreatedDate LIMIT #{@limit}"
+    # end
     @sf_sushi.custom_query(query) do |sushi|
       yield sushi if block_given?
     end
