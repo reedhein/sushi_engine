@@ -1,30 +1,33 @@
 require 'rubygems'
 require 'omniauth-salesforce'
+require 'asciiart'
 require 'pry'
 require 'pry-byebug'
 require 'active_support/all'
+require_relative '../query_to_csv/query_to_csv'
 require_relative 'lib/db/db'
 require_relative 'lib/zoho_sushi'
 require_relative 'lib/sales_force_sushi'
 require_relative 'lib/attachment_migration_tool'
 
 $cnf = YAML::load(File.open('secrets.yml'))
-
+a = AsciiArt.new([Dir.pwd, 'assets', 'sushi.jpg'].join('/'))
+puts a.to_ascii_art(color: true)
 class MigrationTool
   attr_accessor :processed, :meta
   def initialize( limit = 2000, offset = 0 )
     @limit           = limit
     @offset_date     = nil
     @fields          = get_opportunity_fields
-    @sf_sushi        = SalesForceSushi::Client.new
-    @processed = 1
+    @sf_sushi        = SalesForceSushi::Client.instance
     @do_work         = true
     @meta            = manage_meta
   end
 
   def process_work_queue(tool_class = AttachmentMigrationTool)
     begin
-      while @processed > 0 do
+      while @do_work == true do
+        @do_work = false
         @processed = 0
         puts "&"*88
         puts "new batch"
@@ -34,12 +37,14 @@ class MigrationTool
           if sf.migration_complete?
             puts "this sushi pair is already processed. Moving on to next"
             @processed += 1
+            @do_work = true
             next
           else
             zoho = sf.find_zoho
             tool_class.new(zoho, sf, @meta).perform
           end
           @processed += 1
+          @do_work = true
           puts "$"*88
           puts @processed
         end
@@ -96,6 +101,7 @@ class MigrationTool
 
 end
 
-binding.pry
+# q = QueryToCsv.new("", 'funtimes.csv', 'doug@reedhein.com', 'csv report')
+# q.perform.email_result
 MigrationTool.new().process_work_queue
 

@@ -48,11 +48,11 @@ module SalesForceSushi
       # description = description_from_file_data(file_data)
       begin
         file = ZohoSushi::Base.client.download_file(zoho_sushi.module_name, file_data[:id])
-        SalesForceSushi::Client.client.create('Attachment',
-                                              Body: Base64::encode64(file),
-                                              Description: "imported from zoho ID: #{zoho_sushi.id}",
-                                              Name: file_data[:file_name],
-                                              ParentId: id)
+        SalesForceSushi::Client.instance.client.create('Attachment',
+                                                        Body: Base64::encode64(file),
+                                                        Description: "imported from zoho ID: #{zoho_sushi.id}",
+                                                        Name: file_data[:file_name],
+                                                        ParentId: id)
         @modified = true
       rescue Errno::ETIMEDOUT
         puts 'api timeout waiting 10 seconds and retrying'
@@ -69,13 +69,13 @@ module SalesForceSushi
     end
 
     def find_zoho
-      zoho = ZohoSushi::Base.counterpart(zoho_id__c) || SalesForceSushi::Determine.find_zoho(self)
+      zoho = ZohoSushi::Base.counterpart(zoho_id__c) || SalesForceSushi::Determine.new(self)
       @storage_object.update(zoho_object_type: zoho.module_name)
       zoho
     end
 
     def attachments
-      @attachments ||= SalesForceSushi::Client.client.query("SELECT Id, Name FROM Attachment WHERE ParentId = '#{id}'")
+      @attachments ||= SalesForceSushi::Client.instance.query("SELECT Id, Name FROM Attachment WHERE ParentId = '#{id}'")
     end
 
     private

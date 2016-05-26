@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'asciiart'
 require 'sinatra'
 require 'haml'
 require 'omniauth-salesforce'
@@ -7,9 +8,13 @@ require_relative 'lib/db/db'
 require_relative 'lib/zoho_sushi'
 require_relative 'lib/sales_force_sushi'
 
-
+a = AsciiArt.new([Dir.pwd, 'assets', 'sushi.jpg'].join('/'))
+puts a.to_ascii_art(color: true, width: 95)
 $cnf = YAML::load(File.open('secrets.yml'))
 class SalesForceApp < Sinatra::Base
+  set env: :development
+  set port: 9494
+  set :bind, '0.0.0.0'
   use Rack::Session::Pool
   use OmniAuth::Builder do
     provider :salesforce, $cnf['salesforce']['api_key'], $cnf['salesforce']['api_secret']
@@ -91,6 +96,7 @@ class SalesForceApp < Sinatra::Base
   
   private
 
+  `say sushi is coming online` if RbConfig::CONFIG['host_os'] =~ /darwin/
   run! if app_file == $0
 end
 

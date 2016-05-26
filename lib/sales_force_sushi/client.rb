@@ -1,6 +1,7 @@
 
 module SalesForceSushi
-  class Client < Restforce::Client
+  class Client
+    include Singleton
 
     def initialize(user = User.first)
       @client = self.class.client(user)
@@ -16,6 +17,10 @@ module SalesForceSushi
         yield SalesForceSushi::Opportunity.new(entity) if block_given?
         SalesForceSushi::Opportunity.new(entity)
       end
+    end
+
+    def self.query(query_string)
+      self.client.query(query_string)
     end
 
     def self.client(user = User.first)
