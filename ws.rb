@@ -46,9 +46,11 @@ class SalesForceApp < Sinatra::Base
 
   get '/auth/:provider/callback' do
     user = User.first_or_create(user_id: env['omniauth.auth']['extra']['user_id'])
-    user.update( auth_token: env['omniauth.auth']['credentials']['token'],
-                  refresh_token: env['omniauth.auth']['credentials']['refresh_token']
-                )
+    user.auth_token     = env['omniauth.auth']['credentials']['token']
+    user.refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
+    user.save
+    binding.pry
+    puts user
     session[:auth_hash] = env['omniauth.auth']
     redirect '/' unless session[:auth_hash] == nil
   end

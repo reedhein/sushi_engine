@@ -1,6 +1,11 @@
-
+require 'singleton'
+require 'restforce'
+require_relative '../zoho_sushi'
+require_relative '../../../db_share/db'
+require 'pry'
 module SalesForceSushi
   class Client
+    attr_reader :client
     include Singleton
 
     def initialize(user = User.first)
@@ -21,6 +26,10 @@ module SalesForceSushi
 
     def self.query(query_string)
       self.client.query(query_string)
+    end
+
+    def query(query_string)
+      @client.query(query_string)
     end
 
     def self.client(user = User.first)
