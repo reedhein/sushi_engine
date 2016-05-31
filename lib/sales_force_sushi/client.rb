@@ -2,6 +2,7 @@ require 'singleton'
 require 'restforce'
 require_relative '../zoho_sushi'
 require_relative '../../../db_share/db'
+require_relative 'base'
 require 'pry'
 module SalesForceSushi
   class Client
@@ -16,11 +17,16 @@ module SalesForceSushi
       @zoho ||= ZohoSushi.client
     end
 
-    def custom_query(string, &block)
-      result = @client.query(string)
-      result.entries.map do |entity|
-        yield SalesForceSushi::Opportunity.new(entity) if block_given?
-        SalesForceSushi::Opportunity.new(entity)
+    def custom_query(query: , object_type: , &block)
+      result = @client.query(query)
+
+      klass = ['SalesForceSushi', object_type.camelize].join('::').classify.constantize
+      result.map do |entity|
+        if block_given?
+          yield klass.new(entity) 
+        else
+          klass.new(entity)
+        end
       end
     end
 
@@ -33,7 +39,9 @@ module SalesForceSushi
     end
 
     def self.client(user = User.first)
-      Restforce.log = true
+      Restforce.configure do |c|
+        c.log_level = :info
+      end
       Restforce.new oauth_token: user.auth_token,
         refresh_token: user.refresh_token,
         instance_url: $cnf.fetch('salesforce')['instance_url'],

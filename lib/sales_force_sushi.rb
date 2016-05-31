@@ -1,7 +1,5 @@
 require 'restforce'
-require_relative 'sales_force_sushi/utils'
-require_relative 'sales_force_sushi/opportunity'
-require_relative 'sales_force_sushi/client'
-require_relative 'sales_force_sushi/determine'
+path = File.dirname(File.absolute_path(__FILE__) )
+Dir.glob(path + '/**/*'){|file| require file}
 
 

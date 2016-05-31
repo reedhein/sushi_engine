@@ -1,6 +1,8 @@
 require 'json'
+require_relative 'base'
+require_relative 'utils'
 module SalesForceSushi
-  class Opportunity
+  class Opportunity < SalesForceSushi::Base
     include SalesForceSushi::Utils
     FIELDS =  %w[id amount description lead_source name probability stage_name type zoho_id__c created_date]
     attr_accessor :id, :zoho_id__c, :account, :amount, :close_date, :contract, :description, :expected_revenue, :forcase_category_name,

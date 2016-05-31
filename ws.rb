@@ -4,7 +4,7 @@ require 'sinatra'
 require 'haml'
 require 'omniauth-salesforce'
 require 'pry'
-require_relative 'lib/db/db'
+require_relative '../db_share/db'
 require_relative 'lib/zoho_sushi'
 require_relative 'lib/sales_force_sushi'
 
@@ -49,8 +49,6 @@ class SalesForceApp < Sinatra::Base
     user.auth_token     = env['omniauth.auth']['credentials']['token']
     user.refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
     user.save
-    binding.pry
-    puts user
     session[:auth_hash] = env['omniauth.auth']
     redirect '/' unless session[:auth_hash] == nil
   end
