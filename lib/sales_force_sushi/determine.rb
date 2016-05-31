@@ -1,23 +1,25 @@
 module SalesForceSushi
   class Determine
+    attr_accessor :potential, :contact, :lead, :account
     def initialize(sf)
       @sf_sushi = sf
       @email, @name, @phone  = get_meta
       find_zoho(sf)
     end
+
     def find_zoho(sf)
       corresponding_class = nil
-      %w[potential contact lead account].detect do |zoho_object|
+      %w[potential contact lead account].map do |zoho_object|
         puts "checking against zoho object: #{zoho_object}"
         sleep 1
         begin
           binding.pry
-          corresponding_class = self.send(zoho_object.to_sym).find_by_id(sf.zoho_id__c)
-          corresponding_class = self.send(zoho_object.to_sym).find_by_email(zoho_id(id))
-          corresponding_class = self.send(zoho_object.to_sym).find_by_name(zoho_id(id))
+          self.send(zoho_object.to_sym).find_by_phone(@phone)
+          self.send(zoho_object.to_sym).find_by_email(@email)
+          self.send(zoho_object.to_sym).find_by_name(@name)
         rescue Net::OpenTimeout
-          puts "network timeout sleeping 10 seconds then trying again"
-          sleep 10
+          puts "network timeout sleeping 5 seconds then trying again"
+          sleep 5
           retry
         end
       end

@@ -3,17 +3,13 @@ module SalesForceSushi
 
     def initialize(api_object)
       @api_object         = api_object
-      @storage_object     = conver_api_object_to_local_storage(api_object)
-      puts "0" * 88
-      puts @storage_object.new?
-      sleep 0.5 if @storage_object.new?  
-      puts "0" * 88
+      @storage_object     = convert_api_object_to_local_storage(api_object)
       @problems           = []
       map_attributes(api_object)
       self
     end
 
-    def conver_api_object_to_local_storage(api_object)
+    def convert_api_object_to_local_storage(api_object)
       SalesForceProgressRecord.first_or_create(
         sales_force_id: api_object.fetch('Id'),
         object_type: api_object.fetch('attributes').fetch('type'),

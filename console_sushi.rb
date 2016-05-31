@@ -4,13 +4,11 @@ require 'asciiart'
 require 'pry'
 require 'pry-byebug'
 require 'active_support/all'
-require_relative '../query_to_csv/query_to_csv'
-require_relative 'lib/db/db'
+require_relative '../global_utilities/global_utilities'
 require_relative 'lib/zoho_sushi'
 require_relative 'lib/sales_force_sushi'
 require_relative 'lib/attachment_migration_tool'
 
-$cnf = YAML::load(File.open('secrets.yml'))
 a = AsciiArt.new([Dir.pwd, 'assets', 'sushi.jpg'].join('/'))
 puts a.to_ascii_art(color: true)
 class MigrationTool
@@ -101,7 +99,5 @@ class MigrationTool
 
 end
 
-# q = QueryToCsv.new("", 'funtimes.csv', 'doug@reedhein.com', 'csv report')
-# q.perform.email_result
 MigrationTool.new().process_work_queue
 

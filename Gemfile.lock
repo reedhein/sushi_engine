@@ -43,6 +43,7 @@ GEM
       dm-validations (~> 1.2.0)
     data_objects (0.10.17)
       addressable (~> 2.1)
+    deepstruct (0.0.7)
     dm-aggregates (1.2.0)
       dm-core (~> 1.2.0)
     dm-constraints (1.2.0)
@@ -172,6 +173,7 @@ DEPENDENCIES
   activesupport
   asciiart
   data_mapper
+  deepstruct
   dm-sqlite-adapter
   gmail
   haml
@@ -183,4 +185,4 @@ DEPENDENCIES
   sinatra
 
 BUNDLED WITH
-   1.12.3
+   1.12.5

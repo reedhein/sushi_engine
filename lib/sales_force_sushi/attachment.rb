@@ -13,9 +13,14 @@ module SalesForceSushi
       file            = file_pointer(file_directory)
       @local_presence = file.exist?
       begin
-        if @local_presence == false
+        if @local_presence == false && @api_object['Body']
           write_file(file)
-        elsif @local_presence == true && file.size == 0 && @api_object.Body.size > 0
+        elsif @local_presence == false && @api_object['Body'] == nil
+          #this is a kludge b/c I need to get all these ids first.  it's a long story about how moving the createddate market in query returns same results
+          @api_object = SalesForceSushi::Client.query("select parentid, name, id, createddate, body from attachment WHERE id = '#{@id}'").first
+          binding.pry unless @api_object
+          save_locally(backup_path, id_mapping)
+        elsif @local_presence == true && file.size == 0 && @api_object['Body'] && @api_object.Body.size > 0
           write_file(file)
           @problems << "file size zero"
         end
@@ -58,7 +63,7 @@ module SalesForceSushi
 
     def get_parent_class(id_mapping)
       key = parent_id.slice(0..2)
-      id_mapping[key].downcase.camelize
+      id_mapping.fetch(key, "generic").downcase.camelize
     end
   end
 end
