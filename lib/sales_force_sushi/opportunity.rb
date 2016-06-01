@@ -9,5 +9,29 @@ module SalesForceSushi
       :last_modified_by, :lead_source, :next_step, :name, :owner, :record_type, :partner_account, :pricebook_2,
       :campain, :is_private, :probability, :total_opportunity_quality, :stage_name, :synced_quote, :type, :url,
       :api_object, :migration_complete, :attachment_names, :modified, :created_date
+
+    def contacts
+      SalesForceSushi::Client.instance.custom_query(
+        query: "select id, email, createddate from contact where accountid in (select accountid from opportunity where id = '#{id}')"
+      )
+    end
+
+    def account
+      SalesForceSushi::Client.instance.custom_query(
+        query: "select id, createddate, zoho_id__c from account where id in (select accountid from opportunity where id = '#{id}')"
+      ).first
+    end
+
+    def cases
+      SalesForceSushi::Client.instance.custom_query(
+        query: "select id, createddate, zoho_id__c from case where accountid in (select accountid from opportunity where id = '#{id}')"
+      )
+    end
+
+    def notes
+      SalesForceSushi::Client.instance.custom_query(
+        query: "select id, createddate, body, title from note where parentid = '#{id}'"
+      )
+    end
   end
 end

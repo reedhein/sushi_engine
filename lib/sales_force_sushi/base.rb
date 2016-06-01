@@ -1,6 +1,7 @@
 module SalesForceSushi
   class Base
 
+    attr_accessor :id, :created_date, :type, :url, :zoho_id__c
     def initialize(api_object)
       @api_object         = api_object
       @storage_object     = convert_api_object_to_local_storage(api_object)

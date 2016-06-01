@@ -27,10 +27,6 @@ class MigrationTool
       while @do_work == true do
         @do_work = false
         @processed = 0
-        puts "&"*88
-        puts "new batch"
-        puts "&"*88
-
         get_sales_force_work_queue do |sf|
           if sf.migration_complete?
             puts "this sushi pair is already processed. Moving on to next"
@@ -67,12 +63,13 @@ class MigrationTool
   end
 
   def get_unfinished_objects(&block)
+    # removed for debugging
     # if @offset_date && !@offset_date.empty?
     #   query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' AND CreatedDate >= #{@offset_date} ORDER BY CreatedDate LIMIT #{@limit}"
     # else
       query = "SELECT #{@fields} FROM Opportunity WHERE Zoho_ID__c LIKE 'zcrm%' AND zoho_id__c = 'zcrm_1041863000009596031' ORDER BY CreatedDate LIMIT #{@limit}"
     # end
-    @sf_sushi.custom_query(query: query, object_type: "Opportunity") do |sushi|
+    @sf_sushi.custom_query(query: query) do |sushi|
       yield sushi if block_given?
     end
   end

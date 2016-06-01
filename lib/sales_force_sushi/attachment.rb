@@ -24,6 +24,10 @@ module SalesForceSushi
           write_file(file)
           @problems << "file size zero"
         end
+      rescue Faraday::ConnectionFailed
+        puts 'connection failed, retrying'
+        sleep 5
+        retry
       rescue => e
         puts "*"*88
         puts e

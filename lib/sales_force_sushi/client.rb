@@ -15,9 +15,11 @@ module SalesForceSushi
       @zoho ||= ZohoSushi.client
     end
 
-    def custom_query(query: , object_type: , &block)
+    def custom_query(query: nil, &block)
+      fail ArgumentError if query.nil?
       result = @client.query(query)
-
+      return [] if result.count < 1
+      object_type = result.first.dig('attributes', 'type')
       klass = ['SalesForceSushi', object_type.camelize].join('::').classify.constantize
       result.entries.map do |entity|
         if block_given?
@@ -37,7 +39,7 @@ module SalesForceSushi
     end
 
     def self.client(user = User.first)
-      Restforce.log = true
+      Restforce.log = false
       Restforce.configure do |c|
         c.log_level = :info
       end

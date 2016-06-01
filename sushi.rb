@@ -1,0 +1,8 @@
+require 'rubygems'
+require 'omniauth-salesforce'
+require 'asciiart'
+require 'pry'
+require 'pry-byebug'
+require 'active_support/all'
+require_relative '../global_utilities/global_utilities'
+require_relative 'lib/sales_force_sushi'
