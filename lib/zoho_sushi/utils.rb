@@ -38,6 +38,7 @@ module ZohoSushi
     module ClassMethods
 
       def counterpart(id)
+        fail ArgumentError unless id
         corresponding_class = nil
         %w[potential contact lead account].detect do |zoho_object|
           puts "checking against zoho object #{zoho_object}"
